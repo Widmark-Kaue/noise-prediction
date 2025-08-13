@@ -228,7 +228,7 @@ plt.tight_layout()
 plt.show(block = False)
 
 #%% Plot Thrust and Torque
-plt.close('all')
+# plt.close('all')
 
 fig = plt.figure(figsize=(11, 4))
 gs = GridSpec(1, 2)
@@ -283,7 +283,7 @@ plt.tight_layout()
 plt.show(block = False)
 
 #%% Noise Computation
-plt.close('all')
+# plt.close('all')
 # Initial Conditions
 nmics = 100
 # nmics = 10
@@ -396,65 +396,65 @@ ax2.grid()
 
 plt.tight_layout()
 
-plt.show(block = False)
+plt.show(block = True)
 
 
-# %% 
-import pickle
+# # %% 
+# import pickle
 
-with open('HansonTQ.pkl', 'rb') as file:
-    HTQ = pickle.load(file)
+# with open('HansonTQ.pkl', 'rb') as file:
+#     HTQ = pickle.load(file)
     
-with open('HansonLD.pkl', 'rb') as file:
-    HLD = pickle.load(file)
+# with open('HansonLD.pkl', 'rb') as file:
+#     HLD = pickle.load(file)
 
 
 
-#%% Absolute values
-HTQ = np.abs(HTQ)
-HLD = np.abs(HLD)
-# %%
+# #%% Absolute values
+# HTQ = np.abs(HTQ)
+# HLD = np.abs(HLD)
+# # %%
 
-# var | col
-# cte0| 0
-# cte1| 1
-# kx  | 2
-# psiL| 3 
-# phis| 4
-# JmB | 5
-# dPdr| 6
+# # var | col
+# # cte0| 0
+# # cte1| 1
+# # kx  | 2
+# # psiL| 3 
+# # phis| 4
+# # JmB | 5
+# # dPdr| 6
 
-var = ['cte0', 'cte1', 'kx', 'psiL', 'phis', 'JmB', 'dPdr']
+# var = ['cte0', 'cte1', 'kx', 'psiL', 'phis', 'JmB', 'dPdr']
 
-# if col == -1, plot all 
-col = -1
-mics = np.arange(nmics).reshape((2, 5))
+# # if col == -1, plot all 
+# col = -1
+# mics = np.arange(nmics).reshape((2, 5))
 
-if col == -1:
-    vec = np.arange(0, len(var))
-else:
-    vec = [col]
+# if col == -1:
+#     vec = np.arange(0, len(var))
+# else:
+#     vec = [col]
     
-for col in vec:
-    fig = plt.figure()
-    gs = GridSpec(2, 5)
-    for i, j in np.ndindex(mics.shape):
-        ax = fig.add_subplot(gs[i, j])
-        mic = mics[i, j]
-        ax.plot(r_R, HTQ[:, col, mic], 'k', label = 'T&T')
-        ax.plot(r_R, HLD[:, col, mic], 'bo', label = 'L&D', markersize = 4)
+# for col in vec:
+#     fig = plt.figure()
+#     gs = GridSpec(2, 5)
+#     for i, j in np.ndindex(mics.shape):
+#         ax = fig.add_subplot(gs[i, j])
+#         mic = mics[i, j]
+#         ax.plot(r_R, HTQ[:, col, mic], 'k', label = 'T&T')
+#         ax.plot(r_R, HLD[:, col, mic], 'bo', label = 'L&D', markersize = 4)
         
         
-        ax.set_title(f'mic {mic+1}')
-        if mic == 0:
-            ax.legend()
+#         ax.set_title(f'mic {mic+1}')
+#         if mic == 0:
+#             ax.legend()
 
-    fig.suptitle(var[col])
-    fig.supxlabel('r/R')
-    fig.supylabel(var[col])
+#     fig.suptitle(var[col])
+#     fig.supxlabel('r/R')
+#     fig.supylabel(var[col])
 
-    plt.tight_layout()
-    plt.show(block = False)
+#     plt.tight_layout()
+#     plt.show(block = False)
 
 
-# %%
+# # %%

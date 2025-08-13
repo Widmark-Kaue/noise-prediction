@@ -2,7 +2,6 @@
 import numpy as np
 from scipy.special import jv
 import matplotlib.pyplot as plt
-from src.noise import farfield
 #%%%
 x = np.linspace(0, 10, 100)
 order = np.arange(1, 4)
