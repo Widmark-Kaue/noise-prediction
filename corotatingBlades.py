@@ -1,26 +1,17 @@
 #%% imports
-# from IPython import get_ipython
-
-# # Limpar variáveis
-# get_ipython().run_line_magic('reset', '-f')
-
-# # Limpar console
-# get_ipython().run_line_magic('clear', '')
-# get_ipython()
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
+from pathlib import Path
 from src.noise import farfield
 
+dir = Path().joinpath('validate_data', 'corotatingBlades')
 
 
 #%% load mics
 # Array of mics
-x, z, y = np.loadtxt('array24mics.txt', unpack=True)
+x, z, y = np.loadtxt(dir.joinpath('array24mics.txt'), unpack=True)
 y = np.full_like(y, 1.06)
 
 mic = np.array([x, y, z]).T
@@ -71,10 +62,10 @@ ax.set_ylabel('y')
 ax.set_zlabel('z')
 # ax.view_init(elev=15., azim=25, roll=0)
 plt.tight_layout()
-plt.show()
+plt.show(block = False)
 
 #%% Plot array mics 2D
-
+plt.figure()
 plt.plot(x, z, 'ko')
 plt.axhline(0, color = 'k', linestyle = '--')
 plt.axvline(0, color = 'k', linestyle = '--')
@@ -82,12 +73,12 @@ plt.axis('equal')
 
 plt.xlabel('x')
 plt.ylabel('z')
-plt.show()
+plt.show(block = False)
 
 #%% Noise computation
 Pref = 2e-5         # Pa
 
-data = pd.read_excel('corotating_data.xlsx')
+data = pd.read_excel(dir.joinpath('corotating_data.xlsx'))
 case = farfield(microphones=mic)
 
 T = data['Thrust [N]']

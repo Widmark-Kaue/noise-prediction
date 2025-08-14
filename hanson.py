@@ -119,7 +119,7 @@ ax1.set_title('J = 0.4')
 ax1.set_xlabel(r'$\theta$ [deg]')
 ax1.set_ylabel('SPL [dB]')
 
-ax1.set_ylim([52, 67]) # pyright: ignore[reportArgumentType]
+ax1.set_ylim((52, 67))
 
 ax1.legend(loc = 'lower right')
 ax1.grid()
@@ -155,7 +155,7 @@ ax2.set_title('J = 0.6')
 ax2.set_xlabel(r'$\theta$ [deg]')
 ax2.set_ylabel('SPL [dB]')
 
-ax2.set_ylim([52, 67]) # pyright: ignore[reportArgumentType]
+ax2.set_ylim((52, 67)) 
 # ax2.legend(loc = 'lower right')
 ax2.grid()
 

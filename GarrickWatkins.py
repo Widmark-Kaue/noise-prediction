@@ -129,7 +129,7 @@ ax.set_ylabel('$P_{rms}$')
 ax.legend()
 ax.grid(which='both', ls='--') 
 plt.tight_layout()
-plt.show()        
+plt.show(block = False)        
 
  
 #%% Compute Prms for Far Field
