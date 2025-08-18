@@ -1,11 +1,16 @@
 #%%
 import numpy as np
 import pickle
+import re
 
 # from scipy.signal import welch 
 # from scipy.integrate import trapezoid
 from scipy.io import loadmat
 from pathlib import Path
+
+#%% Pattern
+pattern1 = r'(\d+(?:\.\d+)?)\s*RPM'
+pattern2 = r'(\d+(?:\.\d+)?)\s*deg'
 
 #%% Paths
 dir = Path('D:','Enrico','20241206')
@@ -31,7 +36,16 @@ for i, path in enumerate(paths):
         # time = np.arange(t0, (n_values)*dt, dt)
         time = np.array([t0, dt, n_values])
         signal = np.array([data[key]['y_values']['values'] for key in list(data.keys())[3:]])        
-        cluster[k] = dict(time = time,signal = signal,case = file.stem.split(' ')[-1])
+        
+        name = file.stem
+        rpm = re.search(pattern1, name)
+        deg = re.search(pattern2, name)
+        
+        if rpm: rpm = float(rpm.group(1))
+        if deg: deg = float(deg.group(1)) 
+        else: deg = 0
+        
+        cluster[k] = dict(time = time,signal = signal, RPM = rpm, phase = deg)
         
     with open(f'corotatingData_{gap[i]}in.pkl', 'wb') as file:
         pickle.dump(cluster, file)

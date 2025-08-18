@@ -3,11 +3,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
-import re
 
+from matplotlib.colors import TABLEAU_COLORS
+from matplotlib.gridspec import GridSpec
 from scipy.signal import welch 
 from scipy.integrate import trapezoid
 from pathlib import Path
+
+
+colors = list(TABLEAU_COLORS.keys())
 
 dir = Path()
 if not dir.joinpath('corotatingData_0.0in.pkl').exists():
@@ -27,27 +31,28 @@ df = 3.125 # Hz
 window = 'hann'
 overlap = 0.75
 freqCut = 1e4
-around = 5 # range to integrate spectrum and get the tonals
-
-pattern1 = r'(\d+(?:\.\d+)?)\s*RPM'
-pattern2 = r'(\d+(?:\.\d+)?)\s*deg'
-
-
+around = 10 # range to integrate spectrum and get the tonals
 
 #%% Functions
-def get_tonals(freq:np.ndarray, spectrum:np.ndarray, bpf:float) -> np.ndarray:
+def get_tonals(freq:np.ndarray, spectrum:np.ndarray, bpf:float):
     freq_ref = freq/bpf
     bpf_pos = np.argmin(np.abs(freq_ref - 1))
     points = np.arange(bpf_pos-around, bpf_pos+around+1)
-    tonals  = trapezoid(spectrum[points], freq[points], axis=1)
-    return tonals
+    tonals  = trapezoid(spectrum[:, points], freq[points], axis=1)
+    return tonals, bpf_pos
 
 def mag2dB(mag):
     dB = 10*np.log10(mag/(Pref**2))
     return dB
 #%% load data and reduce data
+
 reduceData = np.zeros((len(gaps)*len(phases)*len(RPM), 28)) # gap | phase | RPM | BPF | Mic1 | Mic2 ... 
 
+# fig1 = plt.figure(1)
+# fig2 = plt.figure(2)
+
+
+count = 0
 for k in range(len(gaps)):
 
     case = dir.joinpath(f'corotatingData_{gaps[k]}in.pkl')
@@ -77,35 +82,44 @@ for k in range(len(gaps)):
         freq = freq[pos]
         spectrum = spectrum[:, pos]
     
-        if gaps[k] == 0:
-            data['case'] = data['case'].replace('12x8', '0in')
-            phase = 0
-        else:
-            phase = int(re.search(pattern2, data['case'].split('_')[0]).group(1))  # type: ignore
+      
+        rpm = data['RPM']
+        phase = data['phase']
         
-        rpm = int(re.search(pattern1, data['case'].split('_')[-1]).group(1)) # type: ignore
         BPF = rpm/60 * B
-        tonals = get_tonals(freq, spectrum, BPF)
+        tonals, bpf_pos = get_tonals(freq, spectrum, BPF)
         
         ## Update matrix
-        reduceData[0] = gaps[k]
-        reduceData[1] = phase
-        reduceData[2] = rpm
-        reduceData[3] = BPF
-        reduceData[4:] = mag2dB(tonals)
-        
+        reduceData[count, 0] = gaps[k]
+        reduceData[count, 1] = phase
+        reduceData[count, 2] = rpm
+        reduceData[count, 3] = BPF
+        reduceData[count, 4:] = mag2dB(tonals)
+        count+=1
         
         # PLOT
-        plt.figure(figsize=(11, 5))
-        plt.loglog(np.repeat(cluster[0]['freq'].reshape(1,-1), 24, 0).T, cluster[0]['spectrum'].T,)
+        dB = mag2dB(spectrum[[0, 11, -1], :]*df)
+        
+        plt.figure( figsize=(11, 5))
+        plt.semilogx(freq, dB[0] ,colors[0],  alpha = 0.7,label = 'Mic 1')
+        plt.semilogx(freq, dB[1],colors[1], alpha = 0.7,label = 'Mic 12')
+        plt.semilogx(freq, dB[2],colors[2], alpha = 0.7,label = 'Mic 24')
+        
+        plt.semilogx(freq[bpf_pos], mag2dB(tonals[0]),  colors[0] , marker = 'o',)
+        plt.semilogx(freq[bpf_pos], mag2dB(tonals[11]), colors[1], marker = 'o',)
+        plt.semilogx(freq[bpf_pos], mag2dB(tonals[-1]), colors[2], marker = 'o',)
+        
         plt.xlabel('f [Hz]')
-        plt.ylabel('PSD [Pa²/Hz]')
-        plt.legend([f'mic{i}' for i in range(1, 25)], ncols = 8, bbox_to_anchor =(0.5, 1.25), loc = 'upper center')
+        plt.ylabel('SPL [dB]')
+        plt.legend()
 
-        plt.title('Individual' if gaps[k] != 0 else f'Gap = {gaps[k]} in' )
+        title = 'Individual' if k == 0 else f'Gap = {gaps[k]} in - Phase = {phase}'
+        title = title + f' - {rpm:.0}RPM' 
+        plt.title(title)
 
         plt.grid()
         plt.tight_layout()
 
         plt.show(block = False)
 # %%
+pass
