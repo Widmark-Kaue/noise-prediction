@@ -113,8 +113,8 @@ for k in range(len(gaps)):
         plt.ylabel('SPL [dB]')
         plt.legend()
 
-        title = 'Individual' if k == 0 else f'Gap = {gaps[k]} in - Phase = {phase}'
-        title = title + f' - {rpm:.0}RPM' 
+        title = 'Individual' if k == 0 else f'Gap = {gaps[k]} in - Phase = {int(phase)}'
+        title = title + f' - {int(rpm)}RPM' 
         plt.title(title)
 
         plt.grid()
