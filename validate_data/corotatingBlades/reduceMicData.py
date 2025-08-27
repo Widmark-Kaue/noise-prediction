@@ -100,26 +100,42 @@ for k in range(len(gaps)):
         # PLOT
         dB = mag2dB(spectrum[[0, 11, -1], :]*df)
         
-        plt.figure( figsize=(11, 5))
-        plt.semilogx(freq, dB[0] ,colors[0],  alpha = 0.7,label = 'Mic 1')
-        plt.semilogx(freq, dB[1],colors[1], alpha = 0.7,label = 'Mic 12')
-        plt.semilogx(freq, dB[2],colors[2], alpha = 0.7,label = 'Mic 24')
+        # plt.figure( figsize=(11, 5))
+        # plt.semilogx(freq, dB[0] ,colors[0],  alpha = 0.7,label = 'Mic 1')
+        # plt.semilogx(freq, dB[1],colors[1], alpha = 0.7,label = 'Mic 12')
+        # plt.semilogx(freq, dB[2],colors[2], alpha = 0.7,label = 'Mic 24')
         
-        plt.semilogx(freq[bpf_pos], mag2dB(tonals[0]),  colors[0] , marker = 'o',)
-        plt.semilogx(freq[bpf_pos], mag2dB(tonals[11]), colors[1], marker = 'o',)
-        plt.semilogx(freq[bpf_pos], mag2dB(tonals[-1]), colors[2], marker = 'o',)
+        # plt.semilogx(freq[bpf_pos], mag2dB(tonals[0]),  colors[0] , marker = 'o',)
+        # plt.semilogx(freq[bpf_pos], mag2dB(tonals[11]), colors[1], marker = 'o',)
+        # plt.semilogx(freq[bpf_pos], mag2dB(tonals[-1]), colors[2], marker = 'o',)
         
-        plt.xlabel('f [Hz]')
-        plt.ylabel('SPL [dB]')
-        plt.legend()
+        # plt.xlabel('f [Hz]')
+        # plt.ylabel('SPL [dB]')
+        # plt.legend()
 
-        title = 'Individual' if k == 0 else f'Gap = {gaps[k]} in - Phase = {int(phase)}'
-        title = title + f' - {int(rpm)}RPM' 
-        plt.title(title)
+        # title = 'Individual' if k == 0 else f'Gap = {gaps[k]} in - Phase = {int(phase)}'
+        # title = title + f' - {int(rpm)}RPM' 
+        # plt.title(title)
 
-        plt.grid()
-        plt.tight_layout()
+        # plt.grid()
+        # plt.tight_layout()
 
-        plt.show(block = False)
+        # plt.show(block = False)
+# %% save data in sheet
+sheet =  pd.read_excel('corotating_data.xlsx')
+
+for row in range(len(sheet.index)):
+    gap = sheet.iloc[row, 1]
+    phase = sheet.iloc[row, 2]
+    rpm = sheet.iloc[row, 3]
+    
+    pos = (reduceData[:, 0] == gap) * (reduceData[:, 1] == phase) * (reduceData[:, 2] == rpm)   
+    
+    sheet.iloc[row, 7:] = reduceData[pos, 4:]
+    # print(f' ------------- row = {row} -----------')
+    # print(f' Reduce Data: {reduceData[pos,0:3]}')
+    # print(f'Sheet {sheet.iloc[row, 1:4]}')
+
+sheet.to_excel('corotating_data2.xlsx', index=False)
+
 # %%
-pass
